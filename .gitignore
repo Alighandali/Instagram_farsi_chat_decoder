@@ -127,3 +127,8 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
+# custom .gitignore
+test
+src.data.message_1.json
