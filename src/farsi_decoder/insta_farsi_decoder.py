@@ -14,13 +14,12 @@ class InstaChatDecoder:
         """
         # load chat data
         logger.info(f"Loading chat data from {chat_json}")
-        self.chat_data = read_json(DATA_DIR / 'message_1.json')
+        self.chat_data = read_json(chat_json)
 
-        self.fa_translate = read_json(DATA_DIR / 'fa_translate.json')
-        self.emoji = read_json(DATA_DIR / 'emoji_translate.json')
+        self.fa_translate = read_json(DATA_DIR / 'fa_translate.txt')
+        self.emoji = read_json(DATA_DIR / 'emoji_translate.txt')
 
     def emoji_replace(self, txt):
-
         for k in self.emoji.keys():
             txt = txt.replace(k, self.emoji[k])
         return txt
@@ -55,14 +54,13 @@ class InstaChatDecoder:
             rep_item = item
             if unknown_replacement:
                 rep_item = unknown_replacement
-            decoded += self.chat_data.get(item, rep_item)
+            decoded += self.fa_translate.get(item, rep_item)
             i += 2
         return decoded
 
 
     def translator(self):
         result = defaultdict(dict)
-        # result = defaultdict(list)
         logger.info("Adding Emojies...")
         logger.info("Farsi Translating...")
         for msg in self.chat_data['messages']:
