@@ -4,7 +4,7 @@ from collections import defaultdict
 
 from loguru import logger
 from src.data import DATA_DIR
-from src.utils.io import read_json
+from src.utils.io import read_json, write_json
 
 
 class InstaChatDecoder:
@@ -20,6 +20,7 @@ class InstaChatDecoder:
         self.emoji = read_json(DATA_DIR / 'emoji_translate.json')
 
     def emoji_replace(self, txt):
+
         for k in self.emoji.keys():
             txt = txt.replace(k, self.emoji[k])
         return txt
@@ -60,7 +61,10 @@ class InstaChatDecoder:
 
 
     def translator(self):
-        result = defaultdict(list)
+        result = defaultdict(dict)
+        # result = defaultdict(list)
+        logger.info("Adding Emojies...")
+        logger.info("Farsi Translating...")
         for msg in self.chat_data['messages']:
             if not msg.get('content'):
                 continue
@@ -68,13 +72,14 @@ class InstaChatDecoder:
                 continue
             if msg['content'] == 'Liked a message':
                 continue
-            result['messages'].append({
-                'sender_name': self.word_translator(msg['sender_name']," "),
-                # 'timestamp_ms': msg['timestamp_ms'],
-                'timestamp_ms': time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(msg['timestamp_ms'] / 1000)),
-                'content': self.word_translator(self.emoji_replace(msg['content']), ' ')})
-        return result
-
+        
+            result[msg['timestamp_ms']] = {
+                'Time': time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(msg['timestamp_ms'] / 1000)),
+                'Sender': self.word_translator(msg['sender_name'], '*'),
+                'Text': self.word_translator(self.emoji_replace(msg['content']), ' ')
+            }
+        logger.info("Getting Final Result...")
+        write_json(result, DATA_DIR / 'result.json')
 
 if __name__ == "__main__":
     insta_chat = InstaChatDecoder(chat_json=DATA_DIR / 'message_1.json')

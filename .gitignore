@@ -132,3 +132,4 @@ dmypy.json
 # custom .gitignore
 test
 src/data/message_1.json
+src/data/result.json
