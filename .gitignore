@@ -133,3 +133,4 @@ dmypy.json
 test
 src/data/message_1.json
 src/data/result.json
+.vscode/
